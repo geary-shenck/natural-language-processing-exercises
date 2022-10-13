@@ -75,3 +75,29 @@ def basic_clean(article0):
     # removes anything not lowercase, number, single quote, or a space
     article = re.sub(r'[^a-z0-9\'\s]','',article)
     return article
+
+def basic_pipeline(codeup=True,news=True,words_keep=[],words_drop=[]):
+    '''
+    
+    '''
+    import acquire
+    import pandas as pd
+
+    #acquire
+    news_df = pd.DataFrame(acquire.get_news_articles())
+    codeup_df = pd.DataFrame(acquire.get_blog_content("https://codeup.com/blog/"))
+
+    if codeup:
+        codeup_df.rename(columns={"content":"original"},inplace=True)
+        codeup_df["clean"] = [remove_stopwords(tokenize(basic_clean(each)),words_to_add=words_keep,words_to_remove=words_drop) for each in codeup_df.original]
+        codeup_df["stemmed"] = [stem(each) for each in codeup_df.clean]
+        codeup_df["lemmatized"] = [lemmatize(each) for each in codeup_df.clean]
+
+    if news:
+        news_df.rename(columns={"content":"original"},inplace=True),news_df.drop(columns="category",inplace=True)
+        news_df["clean"] = [remove_stopwords(tokenize(basic_clean(each)),words_to_add=words_keep,words_to_remove=words_drop) for each in news_df.original]
+        news_df["stemmed"] = [stem(each) for each in news_df.clean]
+        news_df["lemmatized"] = [lemmatize(each) for each in news_df.clean]
+
+    return codeup_df,news_df
+    
