@@ -90,14 +90,14 @@ def basic_pipeline(codeup=True,news=True,words_keep=[],words_drop=[]):
     if codeup:
         codeup_df.rename(columns={"content":"original"},inplace=True)
         codeup_df["clean"] = [remove_stopwords(tokenize(basic_clean(each)),words_to_add=words_keep,words_to_remove=words_drop) for each in codeup_df.original]
-        codeup_df["stemmed"] = [stem(each) for each in codeup_df.clean]
-        codeup_df["lemmatized"] = [lemmatize(each) for each in codeup_df.clean]
+        codeup_df["stemmed"] = codeup_df.clean.apply(stem)
+        codeup_df["lemmatized"] = codeup_df.clean.apply(lemmatize)
 
     if news:
         news_df.rename(columns={"content":"original"},inplace=True),news_df.drop(columns="category",inplace=True)
         news_df["clean"] = [remove_stopwords(tokenize(basic_clean(each)),words_to_add=words_keep,words_to_remove=words_drop) for each in news_df.original]
-        news_df["stemmed"] = [stem(each) for each in news_df.clean]
-        news_df["lemmatized"] = [lemmatize(each) for each in news_df.clean]
+        news_df["stemmed"] = news_df.clean.apply(stem)
+        news_df["lemmatized"] = news_df.clean.apply(lemmatize)
 
     return codeup_df,news_df
     
